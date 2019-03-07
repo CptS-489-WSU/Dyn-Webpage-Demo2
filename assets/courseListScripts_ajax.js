@@ -1,3 +1,4 @@
+<script>
 /* lbScripts.js
    This file defines the scripts that dynamically generate the table of speedgolf courses
    from a back-end database. 
@@ -77,7 +78,7 @@ $(document).ready(function() {
   $("#coursesTableContainer").data("showBanner",true); //initalize showBannder to false
   $("#coursesTableContainer").data("sortBy","Name");
   $.ajax({type: "GET",
-          url:"http://localhost:3000/courses/",
+          url:"http://sgcourses.us-west-2.elasticbeanstalk.com/courses",
           success: getCoursesCallback,
           dataType: 'json'
   });
@@ -104,7 +105,7 @@ $("#updateBtn").click(function () {
 
   //0. Capture last recorded value of sortBy to see if we need to make ajax call..
   var currSortBy = $("#coursesTableContainer").data("sortBy");
-  var url = "http://localhost:3000/courses?sortBy=";
+  var url = "http://sgcourses.us-west-2.elasticbeanstalk.com/courses?sortBy=";
 
   //1. Disable update button and start spinner while processing
   $(this).prop("disabled",true);
@@ -226,3 +227,4 @@ function SGTimeToString(theTime) {
     return theMinutes + ":" + zeroPad(theSeconds);
   } 
 }
+</script>

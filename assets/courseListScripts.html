@@ -1,0 +1,80 @@
+/* JQUERY EVENT HANDLERS */
+
+/* WINDOW RESIZE: When the user resizes the window, dynamically adjust column width of table
+   based on window width:
+   < 760 px: Display 4 columns ("condensed display")
+   >= 760 px: Display all columns ("full display")
+   We only need to add/remove columns if new window size causes window to cross the 760 px threshold
+*/
+$(window).resize(function() {
+  var width = $(window).width();
+  var condensed = $("#coursesTableContainer").data("condensedDisplay");
+  if (width >= 760) { //window crossed threshold; display full table
+    $(".hWideScreen").show();
+    $(".tdWideScreen").show();
+  } else { //window crossed threshold: display condensed table
+    $(".hWideScreen").hide(); 
+    $(".tdWideScreen").hide(); 
+  }
+});
+
+/* DOCUMENT READY: Make an ajax call to get data on all courses.
+ Add the data to the courses table in the callback.
+*/
+$(document).ready(function() {
+  if (width < 760) { //display condensed table
+    $(".hWideScreen").hide();
+    $(".tdWideScreen").hide();
+});
+
+/* dropdown-item CLICK: Using jquery DOM tree traversal, we can determine what item was clicked and 
+  toggle the selected item accordingly. 
+*/
+  $(".dropdown-item").click(function () {
+  var i, j;
+  //Toggle the selection to what was clicked on.
+  $(this).parent().parent().find(".btn").find("span").text($(this).text()); 
+});
+  
+/* updateBtn CLICK: When the user clicks "Update", we rebuild the Courses Table based on the build a new URL using the selected search/filter options, and
+ reload the page. Use a spinner animation to indicate the page is loading.
+*/
+$("#updateBtn").click(function () {
+
+  //1. Disable update button and start spinner while processing
+  $(this).prop("disabled",true);
+  $(this).html("<i class='fa fa-spinner fa-spin'></i>&nbsp;Updating...");
+
+  //2. set showBanner and sortBy query params based on current dropdown selections
+  var showBanner = $("#showBanner").text() == "Yes");
+  var sortBy = $("#sortBySelected").text();
+  if (sortBy == "Golf Dist" || sortBy == "Run Dist") {
+    sortBy = camelize("Total " + sortBy);
+  } else if (sortBy = "Name" || sortBy = "State") {
+    sortBy = sortBy.toLowerCase();
+  }
+  var url = "<?=ScriptApp.getService().getUrl()?>" + "?showBanner=" + showBanner + "&sortBy=" + sortBy;
+  $(window).open(url,"_top");
+});
+
+/* HELPER FUNCTIONS */
+
+/* camelize -- Converts string to camel case. This is needed because the RESTful API params use camel case.
+*/
+function camelize(str) {
+  return str.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function(match, index) {
+    if (+match === 0) return ""; // or if (/\s+/.test(match)) for white spaces
+    return index == 0 ? match.toLowerCase() : match.toUpperCase();
+  });
+}
+
+/* zeroPad: Returns a string in which its integer parameter is padded with a leading
+ zero if it is < 10.
+*/
+function zeroPad(num) {
+  if (num < 10) {
+    return "0" + num.toString();
+  } else {
+    return num.toString();
+  }
+}

@@ -8,25 +8,33 @@
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="../css/respTable.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
 </head>
+
+<style>
+  <?!=include("css/respTableCSS") ?>
+</style>
+
 <body>
   <div id="coursesTableContainer" class="container">
     <center>
+    <? if (data.showBanner == "true") { ?>
     <div id="banner"><img src="https://res.cloudinary.com/hrscywv4p/image/upload/c_limit,fl_lossy,h_1440,w_720,f_auto,q_auto/v1/458/rtieik3w2w2mmvpt2wg5.png" 
         width="50%" height="auto">
     </div>
+    <? } ?>
      <h1>Speedgolf Courses</h1>
-     <p style="font-style:italic">Retrieved at <span id="retrievedAt"></span></p>
+     <p style="font-style:italic">Retrieved at <span id="retrievedAt">
+         <?=formatDate(new Date)?>
+     </span></p>
     </center>
      <div id="sortFilter" style="text-align:center">
         <div class="btn-group" id="sortByGroup">
             <button type="button" id="sortByBtn" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" 
                     aria-haspopup="true" aria-expanded="false">
-                <i>Sort By:</i> <span class="selectedItem" id="sortBySelected">Name</span>
+                <i>Sort By:</i> <span class="selectedItem" id="sortBySelected"><?=data.sortBy?></span>
             </button>
             <div class="dropdown-menu">
                 <a class="dropdown-item" id="sortByName">Name</a>
@@ -38,7 +46,12 @@
         <div class = "btn-group" id="showBannerGroup">
             <button type="button" id="groupByBtn" class="btn btn-secondary dropdown-toggle" 
                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                 <i>Show Banner:</i> <span class="selectedItem" id="showBanner">Yes</span>
+                 <i>Show Banner:</i> <span class="selectedItem" id="showBanner">
+                     <? if (data.showBanner == "true") { ?>
+                       Yes 
+                    <? } else { ?> 
+                       No 
+                    <? } ?></span>
              </button>
              <div class="dropdown-menu">
                  <a class="dropdown-item" id="showBannerYes">Yes</a>
@@ -64,10 +77,104 @@
             <th class="hWideScreen">Running Dist</th>
         </thead>
         <tbody>
-            <!-- We'll dynamically add rows through JavaScript -->
+            <? for (var i = 0; i < data.courses.length; ++i) {  //add course to table ?>
+                <tr>
+                <td><?=data.courses[i].name?></td>
+                <td><?=data.courses[i].city?></td>
+                <td><?=data.courses[i].state?></td>
+                <td><?=data.courses[i].country?></td>
+                <td class='tdWideScreen'><?=data.courses[i].numHoles?></td>
+                <td class='tdWideScreen'><?=data.courses[i].totalStrPar?></td>
+                <td class='tdWideScreen'><?=SGTimeToString(new Date(data.courses[i].totalTimePar))?></td>
+                <td class='tdWideScreen'><?=data.courses[i].totalGolfDist?></td>
+                <td class='tdWideScreen'><?=data.courses[i].totalRunDist?></td>
+                </tr>
+            <? } ?>
         </tbody>
     </table>       
   </div>
-  <script type="text/javascript" src="../js/courseListScripts.js"></script>
 </body>
+<script>
+    /* JQUERY EVENT HANDLERS */
+    
+    /* WINDOW RESIZE: When the user resizes the window, dynamically adjust column width of table
+        based on window width:
+        < 760 px: Display 4 columns ("condensed display")
+        >= 760 px: Display all columns ("full display")
+        We only need to add/remove columns if new window size causes window to cross the 760 px threshold
+    */
+    $(window).resize(function() {
+        var width = $(window).width();
+        var condensed = $("#coursesTableContainer").data("condensedDisplay");
+        if (width >= 760) { //window crossed threshold; display full table
+        $(".hWideScreen").show();
+        $(".tdWideScreen").show();
+        } else { //window crossed threshold: display condensed table
+        $(".hWideScreen").hide(); 
+        $(".tdWideScreen").hide(); 
+        }
+    });
+    
+    /* DOCUMENT READY: Make an ajax call to get data on all courses.
+        Add the data to the courses table in the callback.
+    */
+    $(document).ready(function() {
+        if ($(window).width() < 760) { //display condensed table
+            $(".hWideScreen").hide();
+            $(".tdWideScreen").hide();
+        }
+    });
+    
+    /* dropdown-item CLICK: Using jquery DOM tree traversal, we can determine what item was clicked and 
+        toggle the selected item accordingly. 
+    */
+        $(".dropdown-item").click(function () {
+        var i, j;
+        //Toggle the selection to what was clicked on.
+        $(this).parent().parent().find(".btn").find("span").text($(this).text()); 
+    });
+        
+    /* updateBtn CLICK: When the user clicks "Update", we rebuild the Courses Table based on the build a new URL using the selected search/filter options, and
+        reload the page. Use a spinner animation to indicate the page is loading.
+    */
+    $("#updateBtn").click(function () {
+    
+        //1. Disable update button and start spinner while processing
+        $(this).prop("disabled",true);
+        $(this).html("<i class='fa fa-spinner fa-spin'></i>&nbsp;Updating...");
+    
+        //2. set showBanner and sortBy query params based on current dropdown selections
+        var showBanner = ($("#showBanner").text() == "Yes");
+        var sortBy = $("#sortBySelected").text();
+        if (sortBy == "Golf Dist" || sortBy == "Run Dist") {
+            sortBy = camelize("Total " + sortBy);
+        } else if (sortBy == "Name" || sortBy == "State") {
+            sortBy = sortBy.toLowerCase();
+        }
+        var url = "<?=ScriptApp.getService().getUrl()?>" + "?page=leaderboard&showBanner=" + showBanner + "&sortBy=" + sortBy;
+        window.open(url,"_top");
+    });
+    
+    /* HELPER FUNCTIONS */
+    
+    /* camelize -- Converts string to camel case. This is needed because the RESTful API params use camel case.
+    */
+    function camelize(str) {
+        return str.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function(match, index) {
+        if (+match === 0) return ""; // or if (/\s+/.test(match)) for white spaces
+        return index == 0 ? match.toLowerCase() : match.toUpperCase();
+        });
+    }
+    
+    /* zeroPad: Returns a string in which its integer parameter is padded with a leading
+        zero if it is < 10.
+    */
+    function zeroPad(num) {
+        if (num < 10) {
+        return "0" + num.toString();
+        } else {
+        return num.toString();
+        }
+    }
+</script>
 </html>
