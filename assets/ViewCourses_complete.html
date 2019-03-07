@@ -18,61 +18,82 @@
 </style>
 
 <body>
-    <div id="coursesTableContainer" class="container">
-      <center>
-      <div id="banner"><img src="https://res.cloudinary.com/hrscywv4p/image/upload/c_limit,fl_lossy,h_1440,w_720,f_auto,q_auto/v1/458/rtieik3w2w2mmvpt2wg5.png" 
-          width="50%" height="auto">
-      </div>
-       <h1>Speedgolf Courses</h1>
-       <p style="font-style:italic">Retrieved at <span id="retrievedAt"></span></p>
-      </center>
-       <div id="sortFilter" style="text-align:center">
-          <div class="btn-group" id="sortByGroup">
-              <button type="button" id="sortByBtn" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" 
-                      aria-haspopup="true" aria-expanded="false">
-                  <i>Sort By:</i> <span class="selectedItem" id="sortBySelected">Name</span>
-              </button>
-              <div class="dropdown-menu">
-                  <a class="dropdown-item" id="sortByName">Name</a>
-                  <a class="dropdown-item" id="sortByState">State</a>
-                  <a class="dropdown-item" id="sortByGolfDist">Golf Dist</a>
-                  <a class="dropdown-item" id="sortByRunDist">Run Dist</a>
-              </div>
-          </div>
-          <div class = "btn-group" id="showBannerGroup">
-              <button type="button" id="groupByBtn" class="btn btn-secondary dropdown-toggle" 
-                      data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                   <i>Show Banner:</i> <span class="selectedItem" id="showBanner">Yes</span>
-               </button>
-               <div class="dropdown-menu">
-                   <a class="dropdown-item" id="showBannerYes">Yes</a>
-                   <a class="dropdown-item" id="showBannerNo">No</a>
-               </div>
-          </div>
-          <div class="btn-group">
-              <button type="button" id="updateBtn" class="btn btn-primary">
-               Update
-              </button>
-          </div>
-      </div>
-      <table id="coursesTable" class ="table table-striped table-responsive-stack">
-          <thead>
-              <th>Name</th>
-              <th>City</th>
-              <th>State</th>
-              <th>Country</th>
-              <th class="hWideScreen"># Holes</th>
-              <th class="hWideScreen">Stroke Par</th>
-              <th class="hWideScreen">Time Par</th>
-              <th class="hWideScreen">Golf Dist</th>
-              <th class="hWideScreen">Running Dist</th>
-          </thead>
-          <tbody>
-              <!-- We'll dynamically add rows through JavaScript -->
-          </tbody>
-      </table>       
+  <div id="coursesTableContainer" class="container">
+    <center>
+    <? if (data.showBanner == "true") { ?>
+    <div id="banner"><img src="https://res.cloudinary.com/hrscywv4p/image/upload/c_limit,fl_lossy,h_1440,w_720,f_auto,q_auto/v1/458/rtieik3w2w2mmvpt2wg5.png" 
+        width="50%" height="auto">
     </div>
-  </body>
+    <? } ?>
+     <h1>Speedgolf Courses</h1>
+     <p style="font-style:italic">Retrieved at <span id="retrievedAt">
+         <?=formatDate(new Date)?>
+     </span></p>
+    </center>
+     <div id="sortFilter" style="text-align:center">
+        <div class="btn-group" id="sortByGroup">
+            <button type="button" id="sortByBtn" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" 
+                    aria-haspopup="true" aria-expanded="false">
+                <i>Sort By:</i> <span class="selectedItem" id="sortBySelected"><?=data.sortBy?></span>
+            </button>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" id="sortByName">Name</a>
+                <a class="dropdown-item" id="sortByState">State</a>
+                <a class="dropdown-item" id="sortByGolfDist">Golf Dist</a>
+                <a class="dropdown-item" id="sortByRunDist">Run Dist</a>
+            </div>
+        </div>
+        <div class = "btn-group" id="showBannerGroup">
+            <button type="button" id="groupByBtn" class="btn btn-secondary dropdown-toggle" 
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                 <i>Show Banner:</i> <span class="selectedItem" id="showBanner">
+                     <? if (data.showBanner == "true") { ?>
+                       Yes 
+                    <? } else { ?> 
+                       No 
+                    <? } ?></span>
+             </button>
+             <div class="dropdown-menu">
+                 <a class="dropdown-item" id="showBannerYes">Yes</a>
+                 <a class="dropdown-item" id="showBannerNo">No</a>
+             </div>
+        </div>
+        <div class="btn-group">
+            <button type="button" id="updateBtn" class="btn btn-primary">
+             Update
+            </button>
+        </div>
+    </div>
+    <table id="coursesTable" class ="table table-striped table-responsive-stack">
+        <thead>
+            <th>Name</th>
+            <th>City</th>
+            <th>State</th>
+            <th>Country</th>
+            <th class="hWideScreen"># Holes</th>
+            <th class="hWideScreen">Stroke Par</th>
+            <th class="hWideScreen">Time Par</th>
+            <th class="hWideScreen">Golf Dist</th>
+            <th class="hWideScreen">Running Dist</th>
+        </thead>
+        <tbody>
+            <? for (var i = 0; i < data.courses.length; ++i) {  //add course to table ?>
+                <tr>
+                <td><?=data.courses[i].name?></td>
+                <td><?=data.courses[i].city?></td>
+                <td><?=data.courses[i].state?></td>
+                <td><?=data.courses[i].country?></td>
+                <td class='tdWideScreen'><?=data.courses[i].numHoles?></td>
+                <td class='tdWideScreen'><?=data.courses[i].totalStrPar?></td>
+                <td class='tdWideScreen'><?=SGTimeToString(new Date(data.courses[i].totalTimePar))?></td>
+                <td class='tdWideScreen'><?=data.courses[i].totalGolfDist?></td>
+                <td class='tdWideScreen'><?=data.courses[i].totalRunDist?></td>
+                </tr>
+            <? } ?>
+        </tbody>
+    </table>       
+  </div>
+</body>
 <script>
     /* JQUERY EVENT HANDLERS */
     
