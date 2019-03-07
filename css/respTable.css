@@ -1,0 +1,32 @@
+/* Credit: https://codepen.io/JacobLett/full/mBQoOj */
+/* Include this code within a style tag in your html file, with other CSS declarations. */
+
+
+@media screen and (max-width: 400px) {
+    .table-responsive-stack tr {
+       -webkit-box-orient: vertical;
+       -webkit-box-direction: normal;
+           -ms-flex-direction: column;
+               flex-direction: column;
+       border-bottom: 3px solid #ccc;
+       display:block;
+       
+    }
+    
+    .table-responsive-stack td, .table-responsive-stack th {
+      display:block;
+      -ms-flex: 1 1 auto;
+      flex: 1 1 auto;
+    }
+ 
+   .table-responsive-stack .table-responsive-stack-thead {
+      font-weight: bold;
+   }  
+   
+    /*  IE9 FIX   */
+    .table-responsive-stack td {
+       float: left\9;
+       width:100%;
+    }
+ }
+ 
