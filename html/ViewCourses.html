@@ -83,24 +83,14 @@
         We only need to add/remove columns if new window size causes window to cross the 760 px threshold
     */
     $(window).resize(function() {
-        var width = $(window).width();
-        if (width >= 760) { //window crossed threshold; display full table
-          $(".hWideScreen").show();
-          $(".tdWideScreen").show();
-        } else { //window crossed threshold: display condensed table
-          $(".hWideScreen").hide(); 
-          $(".tdWideScreen").hide(); 
-        }
+        //TO DO: Fill in code
     });
     
     /* DOCUMENT READY: Make an ajax call to get data on all courses.
         Add the data to the courses table in the callback.
     */
     $(document).ready(function() {
-        if ($(window).width() < 760) { //display condensed table
-            $(".hWideScreen").hide();
-            $(".tdWideScreen").hide();
-        }
+        //TO DO: Fill in code to set table width based on screen width
     });
     
     /* dropdown-item CLICK: Using jquery DOM tree traversal, we can determine what item was clicked and 
@@ -118,19 +108,13 @@
     $("#updateBtn").click(function () {
     
         //1. Disable update button and start spinner while processing
-        $(this).prop("disabled",true);
-        $(this).html("<i class='fa fa-spinner fa-spin'></i>&nbsp;Updating...");
+        //TO DO: Fill in
     
         //2. set showBanner and sortBy query params based on current dropdown selections
-        var showBanner = ($("#showBanner").text() == "Yes");
-        var sortBy = $("#sortBySelected").text();
-        if (sortBy == "Golf Dist" || sortBy == "Run Dist") {
-            sortBy = camelize("Total " + sortBy);
-        } else if (sortBy == "Name" || sortBy == "State") {
-            sortBy = sortBy.toLowerCase();
-        }
-        var url = "<?=ScriptApp.getService().getUrl()?>" + "?page=leaderboard&showBanner=" + showBanner + "&sortBy=" + sortBy;
-        window.open(url,"_top");
+        //TO DO: Fill in
+
+        //3. Reload app with appropriate query params
+        //TO DO: Fill in
     });
     
     /* HELPER FUNCTIONS */

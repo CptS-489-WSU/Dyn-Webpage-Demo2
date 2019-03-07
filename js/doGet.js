@@ -11,19 +11,12 @@ function doGet(e) {
   faviconUrl = "https://dl.dropboxusercontent.com/s/79q9a1xy2148unf/SpeedScore3Icon.ico";
   tName = "Idaho Speedgolf Championship";
   if (e.parameter.page == "leaderboard") { //show leaderboard
+    template = HtmlService.createTemplateFromFile('html/ViewCourses'); //we'll create page from tempalte
     var sortBy = (e.parameter.sortBy ? e.parameter.sortBy : "name");
     var url = "http://sgcourses.us-west-2.elasticbeanstalk.com/courses?sortBy=" + sortBy;
-    var options = {
-      method: "GET",
-      contentType : "application/json"
-    };
-    var response = UrlFetchApp.fetch(url,options);
-    var respData = JSON.parse(response.getContentText());
-    template = HtmlService.createTemplateFromFile('html/ViewCourses');
-    template.data = {sortBy: formatSortBy(sortBy), 
-                     showBanner: (e.parameter.showBanner ? e.parameter.showBanner : "true"),
-                     courses: respData.data}; 
-    console.log("template.data: " + JSON.stringify(template.data));              
+    //
+    //TO DO: insert code to call RESTful API and package up data for processing in HTML Template
+    //
     return template
     .evaluate()
     .setSandboxMode(HtmlService.SandboxMode.IFRAME)
