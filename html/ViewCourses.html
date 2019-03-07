@@ -20,9 +20,11 @@
 <body>
     <div id="coursesTableContainer" class="container">
       <center>
-      <div id="banner"><img src="https://res.cloudinary.com/hrscywv4p/image/upload/c_limit,fl_lossy,h_1440,w_720,f_auto,q_auto/v1/458/rtieik3w2w2mmvpt2wg5.png" 
-          width="50%" height="auto">
-      </div>
+      <? if (data.showBanner == "true") { ?>
+         <div id="banner"><img src="https://res.cloudinary.com/hrscywv4p/image/upload/c_limit,fl_lossy,h_1440,w_720,f_auto,q_auto/v1/458/rtieik3w2w2mmvpt2wg5.png" 
+           width="50%" height="auto">
+         </div>
+       <? } ?>
        <h1>Speedgolf Courses</h1>
        <p style="font-style:italic">Retrieved at <span id="retrievedAt"></span></p>
       </center>
@@ -30,7 +32,7 @@
           <div class="btn-group" id="sortByGroup">
               <button type="button" id="sortByBtn" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" 
                       aria-haspopup="true" aria-expanded="false">
-                  <i>Sort By:</i> <span class="selectedItem" id="sortBySelected">Name</span>
+                  <i>Sort By:</i> <span class="selectedItem" id="sortBySelected"><?=data.sortBy?></span>
               </button>
               <div class="dropdown-menu">
                   <a class="dropdown-item" id="sortByName">Name</a>
@@ -42,7 +44,13 @@
           <div class = "btn-group" id="showBannerGroup">
               <button type="button" id="groupByBtn" class="btn btn-secondary dropdown-toggle" 
                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                   <i>Show Banner:</i> <span class="selectedItem" id="showBanner">Yes</span>
+                   <i>Show Banner:</i> <span class="selectedItem" id="showBanner">
+                       <? if (data.showBanner == "true" { ?>
+                          Yes
+                        <? } else { ?>
+                          No 
+                        <? } ?> 
+                    </span>
                </button>
                <div class="dropdown-menu">
                    <a class="dropdown-item" id="showBannerYes">Yes</a>
@@ -68,7 +76,19 @@
               <th class="hWideScreen">Running Dist</th>
           </thead>
           <tbody>
-              <!-- We'll dynamically add rows through JavaScript -->
+              <? for (var i = 0; i < data.courses.length; ++i) { ?>
+                <tr>
+                  <td><?=data.courses[i].name?></td>
+                  <td><?=data.courses[i].city?></td>
+                  <td><?=data.courses[i].state?></td>
+                  <td><?=data.courses[i].country?></td>
+                  <td class="tdWideScreen"><?=data.courses[i].numHoles?></td>
+                  <td class="tdWideScreen"><?=data.courses[i].totalStrPar?></td>
+                  <td class="tdWideScreen"><?=data.courses[i].totalTimePar?></td>
+                  <td class="tdWideScreen"><?=data.courses[i].totalGolfDist?></td>
+                  <td class="tdWideScreen"><?=data.courses[i].totalRunDist?></td>
+                </tr>
+            <? } ?>
           </tbody>
       </table>       
     </div>
@@ -83,14 +103,24 @@
         We only need to add/remove columns if new window size causes window to cross the 760 px threshold
     */
     $(window).resize(function() {
-        //TO DO: Fill in code
+        var width = $(window).width();
+        if (width >= 760) {
+          $(".hWideScreen").show();
+          $(".tdWideScreen").show();
+        } else { //width < 760
+          $(".hWideScreen").hide();
+          $(".tdWideScreen").hide();
+        }
     });
     
     /* DOCUMENT READY: Make an ajax call to get data on all courses.
         Add the data to the courses table in the callback.
     */
     $(document).ready(function() {
-        //TO DO: Fill in code to set table width based on screen width
+        if ($(window).width() < 760) { //width < 760
+          $(".hWideScreen").hide();
+          $(".tdWideScreen").hide();
+        }
     });
     
     /* dropdown-item CLICK: Using jquery DOM tree traversal, we can determine what item was clicked and 

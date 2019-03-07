@@ -14,9 +14,17 @@ function doGet(e) {
     template = HtmlService.createTemplateFromFile('html/ViewCourses'); //we'll create page from tempalte
     var sortBy = (e.parameter.sortBy ? e.parameter.sortBy : "name");
     var url = "http://sgcourses.us-west-2.elasticbeanstalk.com/courses?sortBy=" + sortBy;
-    //
-    //TO DO: insert code to call RESTful API and package up data for processing in HTML Template
-    //
+    //Call RESTful API and package up data for processing in HTML Template
+    var options = {
+      method: "GET",
+      contentType: "application/json"
+    }
+    //Package up data for templated HTML scripts
+    template.data = {sortBy: formatSortBy(sortBy),
+                     showBanner: (e.parameter.showBanner != 'undefined' ? e.parameter.showBanner : true),
+                     courses: respData.data};
+    var response = UrlFetchApp.fetch(url,options);
+    var respData = JSON.parse(response.getContentText());
     return template
     .evaluate()
     .setSandboxMode(HtmlService.SandboxMode.IFRAME)
