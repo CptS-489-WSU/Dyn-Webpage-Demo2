@@ -18,7 +18,7 @@ function doGet(e) {
     var options = {
       method: "GET",
       contentType: "application/json"
-    }
+    };
     //Package up data for templated HTML scripts
     template.data = {sortBy: formatSortBy(sortBy),
                      showBanner: (e.parameter.showBanner != 'undefined' ? e.parameter.showBanner : true),
